@@ -93,7 +93,7 @@ jobs:
         ./scripts/continuous/prepare.sh ${{matrix.template}}
         make confload-${{matrix.template}}
         make -j $(nproc)
-        ./scripts/continuous/run.sh ${{matrix.template}}
+        # ./scripts/continuous/run.sh ${{matrix.template}}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
