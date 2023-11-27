@@ -12,12 +12,8 @@
 name: "CodeQL"
 
 on:
-  # push:
-  #   branches: [ "main", "master" ]
-  schedule:
-    - cron: '0 0 * * *'
-  pull_request:
-    branches: '*'
+  push:
+    branches: [ "testing" ]
 
 jobs:
   analyze:
@@ -42,6 +38,25 @@ jobs:
         # Use only 'java' to analyze code written in Java, Kotlin or both
         # Use only 'javascript' to analyze code written in JavaScript, TypeScript or both
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
+        template:
+          - aarch64/qemu
+          - arm/qemu
+          - platform/stm32/f4/stm32f4-discovery
+          - x86/qemu
+          - x86/smp
+          - x86/user_apps
+          - project/qt4/x86_qemu_emboxvc
+          - x86/test/lang
+          - x86/test/net
+          - x86/test/fs
+          - x86/test/units
+          - x86/test/packetdrill
+          - x86/test/qt-vnc
+          - sparc/qemu
+          - mips/qemu
+          - ppc/qemu
+          - microblaze/qemu
+          - usermode86/debug
 
     steps:
     - name: Checkout repository
@@ -75,7 +90,10 @@ jobs:
     #   modify them (or add more) to build your code if your project, please refer to the EXAMPLE below for guidance.
 
     - run: |
-        ./.github/workflows/codeql-buildscript.sh
+        ./scripts/continuous/prepare.sh ${{matrix.template}}
+        make confload-${{matrix.template}}
+        make -j $(nproc)
+        ./scripts/continuous/run.sh ${{matrix.template}}
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
